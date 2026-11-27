@@ -166,6 +166,48 @@
       border-color: #a7f3d0;
     }
 
+    /* Forward/Backward Range Nav on Today Tab */
+    .range-nav {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .range-btn {
+      min-height: 40px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #f8fafc;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .range-btn:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+    }
+    .range-today-btn {
+      min-height: 40px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 1.5px solid var(--primary);
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .range-hint {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
     /* 7-Day Working Cards */
     .week-overview-title {
       font-size: 15px;
@@ -484,7 +526,7 @@
       جاري تحميل البيانات من تقويم العيادة...
     </div>
 
-    <!-- TAB 1: TODAY'S RESERVATIONS (DEFAULT) -->
+    <!-- TAB 1: TODAY'S RESERVATIONS (DEFAULT, -14 TO +7 DAYS RANGE) -->
     <section id="tabToday">
       <div class="summary-card">
         <div class="summary-top">
@@ -495,6 +537,19 @@
           </label>
         </div>
         <div class="stats-row" id="todayStats"></div>
+
+        <div class="range-nav">
+          <button type="button" id="btnBack14" class="range-btn" onclick="shiftTodayRange(-1)">
+            ◀ للخلف (حتى 14 يوماً)
+          </button>
+          <button type="button" id="btnResetToday" class="range-today-btn" onclick="resetTodayRange()">
+            اليوم
+          </button>
+          <button type="button" id="btnFwd7" class="range-btn" onclick="shiftTodayRange(1)">
+            للأمام (حتى 7 أيام) ▶
+          </button>
+        </div>
+        <div id="todayRangeHint" class="range-hint"></div>
       </div>
       <div id="todayList"></div>
     </section>
@@ -590,8 +645,11 @@
     // Paste your deployed Google Apps Script Web App (/exec) URL here:
     const API_URL = "https://script.google.com/macros/s/AKfycbxxO-JYEdc3D6-yaF-uYNct6dIWWhPweplPUYSGnhZoI7msGAddBf0eVblNQCT9T5kc/exec";
     const CLINIC_WORKING_DAYS = [1, 2, 3, 4, 6]; // 0=Sun (OFF), 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri (OFF), 6=Sat
+    const MIN_BACK_DAYS = -14;
+    const MAX_FWD_DAYS = 7;
 
     let activeTab = "today";
+    let todayOffsetDays = 0; // 0 = today; allowed range: -14 .. +7
     let todayData = null;
     let sevenDaysCache = [];
 
@@ -615,6 +673,12 @@
       const m = parts.find(p => p.type === "month").value;
       const d = parts.find(p => p.type === "day").value;
       return `${y}-${m}-${d}`;
+    }
+
+    function addDaysToYmd(baseYmd, deltaDays) {
+      const [y, m, d] = String(baseYmd).split("-").map(Number);
+      const dt = new Date(y, m - 1, d + deltaDays);
+      return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
     }
 
     function isHolidayYmd(dateYmd) {
@@ -677,6 +741,7 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
+      todayOffsetDays = 0;
       loadTodayData();
     });
 
@@ -718,13 +783,25 @@
       box.classList.remove("hidden");
     }
 
-    // ================= TAB 1: TODAY'S RESERVATIONS =================
+    // ================= TAB 1: TODAY'S RESERVATIONS (-14 .. +7 DAYS) =================
+    function shiftTodayRange(delta) {
+      const nextOffset = todayOffsetDays + delta;
+      if (nextOffset < MIN_BACK_DAYS || nextOffset > MAX_FWD_DAYS) return;
+      todayOffsetDays = nextOffset;
+      loadTodayData();
+    }
+
+    function resetTodayRange() {
+      todayOffsetDays = 0;
+      loadTodayData();
+    }
+
     async function loadTodayData() {
       setLoading(true);
       showAppError("");
       try {
-        const today = getCairoTodayYmd();
-        const data = await apiGet(today);
+        const targetYmd = addDaysToYmd(getCairoTodayYmd(), todayOffsetDays);
+        const data = await apiGet(targetYmd);
         if (!data.ok) throw new Error(data.error || "فشل تحميل بيانات اليوم");
         todayData = data;
         renderTodayTab();
@@ -738,8 +815,22 @@
     function renderTodayTab() {
       if (!todayData) return;
       const isHol = isHolidayYmd(todayData.date);
-      document.getElementById("todayTitle").textContent = `${todayData.dayNameAr} (${todayData.date})`;
+      const isActualToday = todayOffsetDays === 0;
+      const prefixLabel = isActualToday ? "اليوم — " : "";
+      document.getElementById("todayTitle").textContent = `${prefixLabel}${todayData.dayNameAr} (${todayData.date})`;
       document.getElementById("todayTitle").classList.toggle("holiday-strike", isHol);
+
+      document.getElementById("btnBack14").disabled = todayOffsetDays <= MIN_BACK_DAYS;
+      document.getElementById("btnFwd7").disabled = todayOffsetDays >= MAX_FWD_DAYS;
+      document.getElementById("btnResetToday").classList.toggle("hidden", isActualToday);
+
+      const offsetText =
+        todayOffsetDays === 0
+          ? "معروض: اليوم (النطاق المتاح: 14 يوماً للخلف حتى 7 أيام للأمام)"
+          : todayOffsetDays < 0
+            ? `معروض: قبل اليوم بـ ${Math.abs(todayOffsetDays)} يوم (الحد الأقصى: 14 يوماً للخلف)`
+            : `معروض: بعد اليوم بـ ${todayOffsetDays} يوم (الحد الأقصى: 7 أيام للأمام)`;
+      document.getElementById("todayRangeHint").textContent = offsetText;
 
       const bookedSlots = todayData.slots.filter(s => s.isBooked && s.booking);
       const withDocSlot = bookedSlots.find(s => s.booking.withDoctor);
@@ -756,7 +847,7 @@
       const container = document.getElementById("todayList");
 
       if (listSlots.length === 0) {
-        container.innerHTML = `<div class="empty-state">${isHol ? "اليوم عطلة أسبوعية ولا توجد حجوزات مسجلة." : "لا توجد حجوزات مسجلة في تقويم العيادة اليوم."}</div>`;
+        container.innerHTML = `<div class="empty-state">${isHol ? "هذا اليوم عطلة أسبوعية ولا توجد حجوزات مسجلة." : "لا توجد حجوزات مسجلة في تقويم العيادة لهذا اليوم."}</div>`;
         return;
       }
 

@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>عيادة أ.د. أحمد المحروقي — لوحة الإدارة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-dark: #115e59;
+      --primary-light: #ccfbf1;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --emerald: #059669;
+      --emerald-bg: #ecfdf5;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 84px;
+    }
+
+    /* Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: var(--primary);
+      color: #fff;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+    }
+    .topbar h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+    .topbar small {
+      display: block;
+      font-size: 11px;
+      opacity: 0.88;
+      font-weight: 400;
+    }
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .icon-btn:active { opacity: 0.75; }
+
+    /* Container */
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .field-group {
+      text-align: right;
+      margin-bottom: 14px;
+    }
+    .field-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+    .input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 15px;
+      outline: none;
+      background: #fff;
+    }
+    .input:focus { border-color: var(--primary); }
+
+    .btn {
+      width: 100%;
+      min-height: 46px;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-emerald { background: var(--emerald); color: #fff; }
+    .btn-outline { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
+
+    /* Summary Banner */
+    .summary-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .summary-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .day-title { font-size: 17px; font-weight: 800; color: var(--primary-dark); }
+    .stats-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .stat-pill {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+    .stat-pill.doctor {
+      background: var(--emerald-bg);
+      color: var(--emerald);
+      border-color: #a7f3d0;
+    }
+
+    /* Date Controls (Tab 2) */
+    .date-nav {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .date-nav button {
+      min-height: 42px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .notice-box {
+      margin-top: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: var(--amber-bg);
+      color: #92400e;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid #fde68a;
+    }
+
+    /* Slot Cards */
+    .slot-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 10px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .slot-card.with-doctor {
+      background: var(--emerald-bg);
+      border-color: var(--emerald);
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.14);
+    }
+    .slot-card.open-slot {
+      border-style: dashed;
+      background: #fafcfd;
+    }
+    .slot-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .slot-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .slot-num {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 3px 10px;
+      border-radius: 8px;
+      direction: ltr;
+    }
+    .slot-card.with-doctor .slot-num { background: var(--emerald); }
+    .slot-card.open-slot .slot-num { background: #64748b; }
+    .slot-time {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .tag-type { background: #e0f2fe; color: #0369a1; }
+    .tag-priority { background: #fee2e2; color: #b91c1c; }
+    .tag-doctor { background: var(--emerald); color: #fff; }
+    .tag-rec { background: var(--primary-light); color: var(--primary-dark); }
+
+    .patient-name {
+      font-size: 17px;
+      font-weight: 800;
+      margin: 4px 0 10px;
+      color: var(--text);
+    }
+    .phone-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .phone-text {
+      font-size: 14px;
+      font-weight: 700;
+      direction: ltr;
+      color: var(--primary-dark);
+      text-decoration: none;
+    }
+    .action-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .mini-btn {
+      min-height: 38px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+    .mini-btn.call { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+    .mini-btn.wa { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .mini-btn.doc-off { background: #fff; border-color: #cbd5e1; color: #334155; }
+    .mini-btn.doc-on { background: var(--emerald); border-color: var(--emerald); color: #fff; }
+    .mini-btn.prio-on { background: #fef2f2; border-color: #fca5a5; color: #b91c1c; }
+    .mini-btn.cancel { background: var(--danger-bg); border-color: #fecaca; color: var(--danger); }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 30;
+      background: #fff;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: 68px;
+      box-shadow: 0 -2px 10px rgba(15, 23, 42, 0.06);
+    }
+    .nav-item {
+      border: none;
+      background: none;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      cursor: pointer;
+    }
+    .nav-item.active {
+      color: var(--primary);
+      background: #f0fdfa;
+      border-top: 3px solid var(--primary);
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.58);
+      z-index: 50;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 12px;
+    }
+    @media (min-width: 600px) {
+      .modal-backdrop { align-items: center; }
+    }
+    .modal {
+      background: #fff;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 20px;
+      padding: 20px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+    }
+    .modal h3 { margin: 0 0 6px; font-size: 18px; color: var(--primary-dark); }
+    .seg-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .seg-btn {
+      min-height: 44px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .seg-btn.active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      margin: 14px 0;
+      cursor: pointer;
+    }
+    .receipt-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      margin: 12px 0;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .error-banner {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid #fecaca;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 36px 16px;
+      color: var(--muted);
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div>
+      <h1>عيادة أ.د. أحمد المحروقي</h1>
+      <small id="headerSubtitle">حجوزات اليوم</small>
+    </div>
+    <button class="icon-btn" onclick="refreshCurrentTab()">🔄 تحديث</button>
+  </header>
+
+  <main class="container">
+    <div id="appError" class="error-banner hidden"></div>
+    <div id="loadingBar" class="summary-card hidden" style="text-align:center;font-weight:700;color:var(--primary);">
+      جاري تحميل البيانات من تقويم العيادة...
+    </div>
+
+    <!-- TAB 1: TODAY'S RESERVATIONS (DEFAULT) -->
+    <section id="tabToday">
+      <div class="summary-card">
+        <div class="summary-top">
+          <div class="day-title" id="todayTitle">—</div>
+          <label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px;cursor:pointer;">
+            <input type="checkbox" id="showEmptyToday" onchange="renderTodayTab()" />
+            عرض المواعيد الفارغة
+          </label>
+        </div>
+        <div class="stats-row" id="todayStats"></div>
+      </div>
+      <div id="todayList"></div>
+    </section>
+
+    <!-- TAB 2: FULL CALENDAR RESERVATIONS -->
+    <section id="tabCalendar" class="hidden">
+      <div class="summary-card">
+        <div class="date-nav">
+          <button onclick="shiftSelectedDate(-1)">◀ اليوم السابق</button>
+          <button onclick="jumpToToday()">اليوم</button>
+          <button onclick="shiftSelectedDate(1)">اليوم التالي ▶</button>
+        </div>
+        <input type="date" id="calendarDateInput" class="input" onchange="onDatePickerChange()" />
+        <div id="calendarDayMeta" style="margin-top:10px;"></div>
+      </div>
+
+      <div id="calendarSlotsList"></div>
+
+      <button id="addExtraSlotBtn" class="btn btn-primary" style="margin-top:8px;" onclick="openExtraBookingModal()">
+        + إضافة حالة إضافية بعد #24
+      </button>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button id="navToday" class="nav-item active" onclick="switchTab('today')">
+      <span>📋</span>
+      <span>حجوزات اليوم</span>
+    </button>
+    <button id="navCalendar" class="nav-item" onclick="switchTab('calendar')">
+      <span>📅</span>
+      <span>الحجوزات</span>
+    </button>
+  </nav>
+
+  <!-- NEW BOOKING MODAL -->
+  <div id="bookingModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <h3 id="modalSlotTitle">حجز موعد جديد</h3>
+      <p id="modalSlotSub" style="margin:0 0 14px;font-size:13px;color:var(--muted);"></p>
+
+      <div id="modalError" class="error-banner hidden"></div>
+
+      <div class="field-group">
+        <label>اسم المريض</label>
+        <input id="bookNameInput" type="text" class="input" placeholder="أدخل اسم المريض (مسموح بتكرار الأسماء)" oninput="validateBookingForm()" />
+      </div>
+
+      <div class="field-group">
+        <label>رقم الهاتف (موبايل)</label>
+        <input id="bookPhoneInput" type="tel" inputmode="tel" dir="ltr" class="input" placeholder="01xxxxxxxxx" oninput="validateBookingForm()" />
+      </div>
+
+      <div class="field-group">
+        <label>نوع الزيارة</label>
+        <div class="seg-group">
+          <button type="button" id="typeNewBtn" class="seg-btn active" onclick="selectVisitType('NEW')">كشف جديد</button>
+          <button type="button" id="typeFollowBtn" class="seg-btn" onclick="selectVisitType('FOLLOW_UP')">إعادة / متابعة</button>
+        </div>
+      </div>
+
+      <label class="switch-row">
+        <div>
+          <div style="font-weight:700;font-size:14px;">حالة أولوية / طارئة (Priority)</div>
+          <div style="font-size:11px;color:var(--muted);">اختياري — لتمييز الحالات العاجلة</div>
+        </div>
+        <input type="checkbox" id="bookPriorityInput" style="width:20px;height:20px;" />
+      </label>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button type="button" class="btn btn-outline" onclick="closeBookingModal()">إلغاء</button>
+        <button type="button" id="confirmBookBtn" class="btn btn-primary" disabled onclick="submitNewBooking()">تأكيد الحجز</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS RECEIPT MODAL -->
+  <div id="receiptModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div style="background:var(--emerald-bg);color:var(--emerald);padding:12px;border-radius:12px;font-weight:800;text-align:center;">
+        ✅ تم تأكيد الحجز وتسجيله في Google Calendar بنجاح
+      </div>
+      <div id="receiptText" class="receipt-box"></div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a id="forwardWaBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-emerald">
+          📲 إرسال للمريض عبر واتساب
+        </a>
+        <button type="button" id="copyReceiptBtn" class="btn btn-outline" onclick="copyReceiptText()">
+          📋 نسخ نص التأكيد
+        </button>
+        <button type="button" class="btn btn-primary" onclick="closeReceiptModal()">
+          إغلاق
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Paste your deployed Google Apps Script Web App (/exec) URL here:
+    const API_URL = "https://script.google.com/macros/s/AKfycbxxO-JYEdc3D6-yaF-uYNct6dIWWhPweplPUYSGnhZoI7msGAddBf0eVblNQCT9T5kc/exec";
+
+    let activeTab = "today";
+    let todayData = null;
+    let calendarData = null;
+    let selectedDate = getCairoTodayYmd();
+
+    let bookingDraft = {
+      date: "",
+      slotNumber: 1,
+      timeAr: "",
+      visitCategory: "NEW"
+    };
+    let lastReceiptMessage = "";
+
+    function getCairoTodayYmd() {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Africa/Cairo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(new Date());
+      const y = parts.find(p => p.type === "year").value;
+      const m = parts.find(p => p.type === "month").value;
+      const d = parts.find(p => p.type === "day").value;
+      return `${y}-${m}-${d}`;
+    }
+
+    function formatDisplayPhone(raw) {
+      const digits = String(raw || "").replace(/\D/g, "");
+      if (digits.startsWith("201") && digits.length === 12) return "0" + digits.slice(2);
+      return digits;
+    }
+
+    function toWaPhone(raw) {
+      const digits = String(raw || "").replace(/\D/g, "");
+      if (digits.startsWith("01") && digits.length === 11) return "2" + digits;
+      return digits;
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    async function apiGet(dateYmd) {
+      const url = `${API_URL}?action=staffData&date=${encodeURIComponent(dateYmd)}`;
+      const res = await fetch(url);
+      return await res.json();
+    }
+
+    async function apiPost(payload) {
+      const res = await fetch(apiUrlOrCheck(), {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ source: "STAFF_APP", ...payload })
+      });
+      return await res.json();
+    }
+
+    function apiUrlOrCheck() {
+      if (!API_URL || API_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL") {
+        throw new Error("يرجى وضع رابط Google Apps Script في متغير API_URL داخل index.html");
+      }
+      return API_URL;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      selectedDate = getCairoTodayYmd();
+      document.getElementById("calendarDateInput").value = selectedDate;
+      loadTodayData();
+    });
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.getElementById("navToday").classList.toggle("active", tab === "today");
+      document.getElementById("navCalendar").classList.toggle("active", tab === "calendar");
+      document.getElementById("tabToday").classList.toggle("hidden", tab !== "today");
+      document.getElementById("tabCalendar").classList.toggle("hidden", tab !== "calendar");
+      document.getElementById("headerSubtitle").textContent =
+        tab === "today" ? "حجوزات اليوم" : "إدارة الحجوزات والتقويم";
+
+      if (tab === "today") {
+        loadTodayData();
+      } else {
+        loadCalendarData(selectedDate);
+      }
+    }
+
+    function refreshCurrentTab() {
+      if (activeTab === "today") loadTodayData();
+      else loadCalendarData(selectedDate);
+    }
+
+    function setLoading(isLoading) {
+      document.getElementById("loadingBar").classList.toggle("hidden", !isLoading);
+    }
+
+    function showAppError(msg) {
+      const box = document.getElementById("appError");
+      if (!msg) {
+        box.classList.add("hidden");
+        return;
+      }
+      box.textContent = msg;
+      box.classList.remove("hidden");
+    }
+
+    // ================= TAB 1: TODAY'S RESERVATIONS =================
+    async function loadTodayData() {
+      setLoading(true);
+      showAppError("");
+      try {
+        apiUrlOrCheck();
+        const today = getCairoTodayYmd();
+        const data = await apiGet(today);
+        if (!data.ok) throw new Error(data.error || "فشل تحميل بيانات اليوم");
+        todayData = data;
+        renderTodayTab();
+      } catch (err) {
+        showAppError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderTodayTab() {
+      if (!todayData) return;
+      document.getElementById("todayTitle").textContent = `${todayData.dayNameAr} (${todayData.date})`;
+
+      const bookedSlots = todayData.slots.filter(s => s.isBooked && s.booking);
+      const withDocSlot = bookedSlots.find(s => s.booking.withDoctor);
+
+      document.getElementById("todayStats").innerHTML = `
+        <span class="stat-pill">إجمالي الحجوزات: ${bookedSlots.length}</span>
+        ${withDocSlot
+          ? `<span class="stat-pill doctor">🩺 مع الطبيب الآن: #${withDocSlot.slotNumber} (${escapeHtml(withDocSlot.booking.patientName)})</span>`
+          : `<span class="stat-pill">لا يوجد مريض داخل الغرفة حالياً</span>`}
+      `;
+
+      const showEmpty = document.getElementById("showEmptyToday").checked;
+      const listSlots = showEmpty ? todayData.slots : bookedSlots;
+      const container = document.getElementById("todayList");
+
+      if (listSlots.length === 0) {
+        container.innerHTML = `<div class="empty-state">لا توجد حجوزات مسجلة في تقويم العيادة اليوم.</div>`;
+        return;
+      }
+
+      container.innerHTML = listSlots.map(slot => {
+        if (!slot.isBooked) {
+          return `
+            <div class="slot-card open-slot">
+              <div class="slot-header" style="margin-bottom:0;">
+                <div class="slot-badge-group">
+                  <span class="slot-num">#${slot.slotNumber}</span>
+                  <span class="slot-time">${escapeHtml(slot.timeAr)}</span>
+                  <span class="tag tag-type">${escapeHtml(slot.matrixLabelAr)}</span>
+                </div>
+                <span style="font-size:12px;color:var(--muted);font-weight:700;">متاح</span>
+              </div>
+            </div>
+          `;
+        }
+
+        const b = slot.booking;
+        const dispPhone = formatDisplayPhone(b.phone);
+        const waPhone = toWaPhone(b.phone);
+        const isDoc = Boolean(b.withDoctor);
+
+        return `
+          <div class="slot-card ${isDoc ? "with-doctor" : ""}">
+            <div class="slot-header">
+              <div class="slot-badge-group">
+                <span class="slot-num">#${slot.slotNumber}</span>
+                <span class="slot-time">${escapeHtml(slot.timeAr)}</span>
+                <span class="tag tag-type">${escapeHtml(b.visitType)}</span>
+                ${b.priority ? `<span class="tag tag-priority">أولوية</span>` : ""}
+                ${isDoc ? `<span class="tag tag-doctor">مع الطبيب الآن</span>` : ""}
+              </div>
+            </div>
+
+            <div class="patient-name">${escapeHtml(b.patientName)}</div>
+
+            <div class="phone-row">
+              <div>
+                ${dispPhone
+                  ? `<a class="phone-text" href="tel:+${waPhone}">📞 ${escapeHtml(dispPhone)}</a>`
+                  : `<span style="font-size:12px;color:var(--muted);">بدون رقم هاتف</span>`}
+              </div>
+
+              <div class="action-btns">
+                ${dispPhone ? `
+                  <a class="mini-btn call" href="tel:+${waPhone}">اتصال</a>
+                  <a class="mini-btn wa" href="https://wa.me/${waPhone}" target="_blank" rel="noopener noreferrer">واتساب</a>
+                ` : ""}
+                <button
+                  type="button"
+                  class="mini-btn ${isDoc ? "doc-on" : "doc-off"}"
+                  onclick="toggleWithDoctor(${slot.slotNumber}, ${!isDoc})">
+                  🩺 ${isDoc ? "مع الطبيب ✓" : "مع الطبيب"}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function toggleWithDoctor(slotNumber, nextState) {
+      const slot = todayData.slots.find(s => s.slotNumber === slotNumber);
+      if (!slot || !slot.booking) return;
+      const b = slot.booking;
+
+      setLoading(true);
+      showAppError("");
+      try {
+        const res = await apiPost({
+          subAction: "TOGGLE_WITH_DOCTOR",
+          date: todayData.date,
+          slotNumber: slotNumber,
+          rowIndex: b.rowIndex,
+          withDoctor: nextState,
+          patientName: b.patientName,
+          phone: b.phone,
+          visitType: b.visitType,
+          eventId: b.eventId
+        });
+        if (!res.ok) throw new Error(res.error || "تعذر تحديث الحالة");
+        await loadTodayData();
+      } catch (err) {
+        showAppError(err.message);
+        setLoading(false);
+      }
+    }
+
+    // ================= TAB 2: FULL CALENDAR RESERVATIONS =================
+    async function loadCalendarData(dateYmd) {
+      selectedDate = dateYmd;
+      document.getElementById("calendarDateInput").value = selectedDate;
+      setLoading(true);
+      showAppError("");
+      try {
+        apiUrlOrCheck();
+        const data = await apiGet(dateYmd);
+        if (!data.ok) throw new Error(data.error || "فشل تحميل جدول اليوم");
+        calendarData = data;
+        renderCalendarTab();
+      } catch (err) {
+        showAppError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function onDatePickerChange() {
+      const val = document.getElementById("calendarDateInput").value;
+      if (val) loadCalendarData(val);
+    }
+
+    function shiftSelectedDate(deltaDays) {
+      const [y, m, d] = selectedDate.split("-").map(Number);
+      const dt = new Date(y, m - 1, d + deltaDays);
+      const nextYmd = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+      loadCalendarData(nextYmd);
+    }
+
+    function jumpToToday() {
+      loadCalendarData(getCairoTodayYmd());
+    }
+
+    function renderCalendarTab() {
+      if (!calendarData) return;
+
+      let metaHtml = `<div class="day-title">${escapeHtml(calendarData.dayNameAr)} (${calendarData.date})</div>`;
+      metaHtml += `<div class="stats-row">`;
+      if (calendarData.nextRecommendedNewSlot) {
+        metaHtml += `<span class="stat-pill">المقترح للكشف الجديد: #${calendarData.nextRecommendedNewSlot}</span>`;
+      }
+      if (calendarData.nextRecommendedFollowUpSlot) {
+        metaHtml += `<span class="stat-pill">المقترح للمتابعة: #${calendarData.nextRecommendedFollowUpSlot}</span>`;
+      }
+      metaHtml += `</div>`;
+
+      if (calendarData.isHoliday) {
+        metaHtml += `<div class="notice-box">يوم عطلة أسبوعية — الحجز متاح لفريق العيادة فقط.</div>`;
+      } else if (calendarData.isTuesday) {
+        metaHtml += `<div class="notice-box">الثلاثاء: عيادة المتابعة وما بعد الجراحة (يمكن للفريق حجز أي حالة يدوياً).</div>`;
+      }
+      document.getElementById("calendarDayMeta").innerHTML = metaHtml;
+
+      document.getElementById("addExtraSlotBtn").textContent =
+        `+ إضافة حالة إضافية بعد #24 (موعد #${calendarData.nextExtraSlotNumber})`;
+
+      const list = document.getElementById("calendarSlotsList");
+      list.innerHTML = calendarData.slots.map(slot => {
+        const isRec =
+          slot.slotNumber === calendarData.nextRecommendedNewSlot ||
+          slot.slotNumber === calendarData.nextRecommendedFollowUpSlot;
+
+        if (!slot.isBooked) {
+          return `
+            <div class="slot-card open-slot">
+              <div class="slot-header" style="margin-bottom:0;">
+                <div class="slot-badge-group">
+                  <span class="slot-num">#${slot.slotNumber}</span>
+                  <span class="slot-time">${escapeHtml(slot.timeAr)}</span>
+                  <span class="tag tag-type">${escapeHtml(slot.matrixLabelAr)}</span>
+                  ${isRec ? `<span class="tag tag-rec">المقترح التالي</span>` : ""}
+                </div>
+                <button type="button" class="mini-btn call" onclick="openBookingModal(${slot.slotNumber}, '${escapeHtml(slot.timeAr)}', '${slot.matrixCategory === "FOLLOW_UP" ? "FOLLOW_UP" : "NEW"}')">
+                  + احجز
+                </button>
+              </div>
+            </div>
+          `;
+        }
+
+        const b = slot.booking;
+        const dispPhone = formatDisplayPhone(b.phone);
+        const waPhone = toWaPhone(b.phone);
+
+        return `
+          <div class="slot-card">
+            <div class="slot-header">
+              <div class="slot-badge-group">
+                <span class="slot-num">#${slot.slotNumber}</span>
+                <span class="slot-time">${escapeHtml(slot.timeAr)}</span>
+                <span class="tag tag-type">${escapeHtml(b.visitType)}</span>
+                ${b.priority ? `<span class="tag tag-priority">أولوية</span>` : ""}
+              </div>
+            </div>
+
+            <div class="patient-name">${escapeHtml(b.patientName)}</div>
+
+            <div class="phone-row">
+              <div>
+                ${dispPhone
+                  ? `<a class="phone-text" href="tel:+${waPhone}">📞 ${escapeHtml(dispPhone)}</a>`
+                  : `<span style="font-size:12px;color:var(--muted);">بدون رقم هاتف</span>`}
+              </div>
+
+              <div class="action-btns">
+                ${dispPhone ? `
+                  <a class="mini-btn call" href="tel:+${waPhone}">اتصال</a>
+                  <a class="mini-btn wa" href="https://wa.me/${waPhone}" target="_blank" rel="noopener noreferrer">واتساب</a>
+                ` : ""}
+                ${b.rowIndex ? `
+                  <button type="button" class="mini-btn ${b.priority ? "prio-on" : ""}" onclick="toggleSlotPriority(${b.rowIndex}, ${!b.priority})">
+                    ${b.priority ? "★ أولوية" : "☆ أولوية"}
+                  </button>
+                ` : ""}
+                <button type="button" class="mini-btn cancel" onclick="cancelSlotReservation(${slot.slotNumber}, '${escapeHtml(b.eventId)}', ${b.rowIndex || "null"})">
+                  إلغاء الحجز
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function openBookingModal(slotNumber, timeAr, defaultCategory) {
+      bookingDraft = {
+        date: calendarData.date,
+        slotNumber: slotNumber,
+        timeAr: timeAr,
+        visitCategory: defaultCategory || "NEW"
+      };
+      document.getElementById("modalSlotTitle").textContent = `حجز موعد #${slotNumber}`;
+      document.getElementById("modalSlotSub").textContent = `${calendarData.dayNameAr} (${calendarData.date}) — الساعة ${timeAr}`;
+      document.getElementById("bookNameInput").value = "";
+      document.getElementById("bookPhoneInput").value = "";
+      document.getElementById("bookPriorityInput").checked = false;
+      document.getElementById("modalError").classList.add("hidden");
+      selectVisitType(bookingDraft.visitCategory);
+      validateBookingForm();
+      document.getElementById("bookingModal").classList.remove("hidden");
+    }
+
+    function openExtraBookingModal() {
+      if (!calendarData) return;
+      const nextNum = calendarData.nextExtraSlotNumber || 25;
+      const minsFromStart = (nextNum - 1) * 15;
+      const totalMins = 12 * 60 + 30 + minsFromStart;
+      const h24 = Math.floor(totalMins / 60) % 24;
+      const min = String(totalMins % 60).padStart(2, "0");
+      const period = h24 >= 12 ? "مساءً" : "صباحاً";
+      const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+      openBookingModal(nextNum, `${h12}:${min} ${period}`, "NEW");
+    }
+
+    function closeBookingModal() {
+      document.getElementById("bookingModal").classList.add("hidden");
+    }
+
+    function selectVisitType(cat) {
+      bookingDraft.visitCategory = cat;
+      document.getElementById("typeNewBtn").classList.toggle("active", cat === "NEW");
+      document.getElementById("typeFollowBtn").classList.toggle("active", cat === "FOLLOW_UP");
+    }
+
+    function validateBookingForm() {
+      const nameVal = document.getElementById("bookNameInput").value.trim();
+      const phoneVal = document.getElementById("bookPhoneInput").value.trim();
+      document.getElementById("confirmBookBtn").disabled = !(nameVal || phoneVal);
+    }
+
+    async function submitNewBooking() {
+      const patientName = document.getElementById("bookNameInput").value.trim();
+      const phone = document.getElementById("bookPhoneInput").value.trim();
+      const priority = document.getElementById("bookPriorityInput").checked;
+      const errBox = document.getElementById("modalError");
+      const btn = document.getElementById("confirmBookBtn");
+
+      if (!patientName && !phone) {
+        errBox.textContent = "يجب إدخال اسم المريض أو رقم الهاتف على الأقل.";
+        errBox.classList.remove("hidden");
+        return;
+      }
+
+      errBox.classList.add("hidden");
+      btn.disabled = true;
+      btn.textContent = "جاري الحجز...";
+
+      try {
+        const res = await apiPost({
+          subAction: "BOOK_SLOT",
+          date: bookingDraft.date,
+          slotNumber: bookingDraft.slotNumber,
+          patientName: patientName,
+          phone: phone,
+          visitCategory: bookingDraft.visitCategory,
+          priority: priority
+        });
+
+        if (!res.ok) {
+          throw new Error(res.error || "تعذر إتمام الحجز");
+        }
+
+        closeBookingModal();
+        await loadCalendarData(bookingDraft.date);
+        openReceiptModal(res.confirmationMessage, res.normalizedPhone);
+      } catch (err) {
+        errBox.textContent = err.message;
+        errBox.classList.remove("hidden");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "تأكيد الحجز";
+      }
+    }
+
+    function openReceiptModal(message, normalizedPhone) {
+      lastReceiptMessage = message || "";
+      document.getElementById("receiptText").textContent = lastReceiptMessage;
+      const encoded = encodeURIComponent(lastReceiptMessage);
+      const waHref = normalizedPhone
+        ? `https://wa.me/${normalizedPhone}?text=${encoded}`
+        : `https://wa.me/?text=${encoded}`;
+      document.getElementById("forwardWaBtn").href = waHref;
+      document.getElementById("copyReceiptBtn").textContent = "📋 نسخ نص التأكيد";
+      document.getElementById("receiptModal").classList.remove("hidden");
+    }
+
+    function closeReceiptModal() {
+      document.getElementById("receiptModal").classList.add("hidden");
+    }
+
+    async function copyReceiptText() {
+      try {
+        await navigator.clipboard.writeText(lastReceiptMessage);
+        document.getElementById("copyReceiptBtn").textContent = "✅ تم النسخ للحافظة";
+      } catch (e) {
+        document.getElementById("copyReceiptBtn").textContent = "تعذر النسخ التلقائي";
+      }
+    }
+
+    async function toggleSlotPriority(rowIndex, nextPriority) {
+      setLoading(true);
+      showAppError("");
+      try {
+        const res = await apiPost({
+          subAction: "TOGGLE_PRIORITY",
+          rowIndex: rowIndex,
+          priority: nextPriority
+        });
+        if (!res.ok) throw new Error(res.error || "تعذر تعديل الأولوية");
+        await loadCalendarData(selectedDate);
+      } catch (err) {
+        showAppError(err.message);
+        setLoading(false);
+      }
+    }
+
+    async function cancelSlotReservation(slotNumber, eventId, rowIndex) {
+      if (!confirm(`هل أنت متأكد من إلغاء وحذف الموعد رقم #${slotNumber} من Google Calendar؟`)) {
+        return;
+      }
+      setLoading(true);
+      showAppError("");
+      try {
+        const res = await apiPost({
+          subAction: "CANCEL_SLOT",
+          date: selectedDate,
+          slotNumber: slotNumber,
+          eventId: eventId,
+          rowIndex: rowIndex
+        });
+        if (!res.ok) throw new Error(res.error || "تعذر إلغاء الحجز");
+        await loadCalendarData(selectedDate);
+      } catch (err) {
+        showAppError(err.message);
+        setLoading(false);
+      }
+    }
+  </script>
+</body>
+</html>

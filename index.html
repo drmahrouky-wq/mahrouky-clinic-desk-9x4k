@@ -77,7 +77,7 @@
 
     /* Container */
     .container {
-      max-width: 680px;
+      max-width: 720px;
       margin: 0 auto;
       padding: 14px;
     }
@@ -93,17 +93,17 @@
       margin-bottom: 5px;
       color: var(--text);
     }
-    .input {
+    .input, .select-mini {
       width: 100%;
-      padding: 12px 14px;
+      padding: 11px 12px;
       border: 1.5px solid var(--border);
       border-radius: 12px;
       font-family: inherit;
-      font-size: 15px;
+      font-size: 14px;
       outline: none;
       background: #fff;
     }
-    .input:focus { border-color: var(--primary); }
+    .input:focus, .select-mini:focus { border-color: var(--primary); }
 
     .btn {
       width: 100%;
@@ -125,7 +125,7 @@
     .btn-emerald { background: var(--emerald); color: #fff; }
     .btn-outline { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
 
-    /* Summary Banner */
+    /* Summary & Holiday Styling */
     .summary-card {
       background: var(--card);
       border-radius: 16px;
@@ -142,6 +142,12 @@
       gap: 8px;
     }
     .day-title { font-size: 17px; font-weight: 800; color: var(--primary-dark); }
+    .day-title.holiday-strike {
+      color: #94a3b8;
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+      text-decoration-color: #dc2626;
+    }
     .stats-row {
       display: flex;
       gap: 8px;
@@ -162,7 +168,66 @@
       border-color: #a7f3d0;
     }
 
-    /* Date Controls (Tab 2) */
+    /* 7-Day Working Overview Strip */
+    .week-overview-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .working-day-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .working-day-card.selected-day {
+      border-color: var(--primary);
+      background: #f0fdfa;
+    }
+    .wd-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .wd-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .wd-next-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .wd-chip {
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+    .wd-chip.new-chip { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+    .wd-chip.fu-chip { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .wd-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .wd-dropdown-wrap {
+      margin-top: 8px;
+    }
+
+    /* Date Controls */
     .date-nav {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
@@ -178,6 +243,23 @@
       font-weight: 700;
       font-size: 13px;
       cursor: pointer;
+    }
+    .holiday-banner {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+      text-decoration: line-through;
+    }
+    .holiday-subnote {
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--danger);
     }
     .notice-box {
       margin-top: 10px;
@@ -208,6 +290,17 @@
       border-style: dashed;
       background: #fafcfd;
     }
+    .slot-card.holiday-locked {
+      opacity: 0.48;
+      background: #f1f5f9;
+      border-style: solid;
+      border-color: #cbd5e1;
+    }
+    .slot-card.holiday-locked .slot-time,
+    .slot-card.holiday-locked .tag {
+      text-decoration: line-through;
+      color: #64748b;
+    }
     .slot-header {
       display: flex;
       align-items: center;
@@ -232,6 +325,7 @@
     }
     .slot-card.with-doctor .slot-num { background: var(--emerald); }
     .slot-card.open-slot .slot-num { background: #64748b; }
+    .slot-card.holiday-locked .slot-num { background: #94a3b8; }
     .slot-time {
       font-size: 13px;
       font-weight: 700;
@@ -290,6 +384,10 @@
       align-items: center;
       gap: 5px;
       cursor: pointer;
+    }
+    .mini-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
     .mini-btn.call { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
     .mini-btn.wa { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
@@ -453,10 +551,22 @@
 
     <!-- TAB 2: FULL CALENDAR RESERVATIONS -->
     <section id="tabCalendar" class="hidden">
+      <!-- 7-Day Working Days Quick Overview -->
+      <div class="summary-card">
+        <div class="week-overview-title">
+          <span>أيام العمل المتاحة خلال 7 أيام (بدون الجمعة والأحد)</span>
+          <button type="button" class="mini-btn" onclick="loadNextSevenWorkingDays()" style="min-height:32px;padding:4px 10px;font-size:12px;">
+            ↻ تحديث الأيام
+          </button>
+        </div>
+        <div id="sevenDaysOverview">جاري تجهيز الأيام الـ 7 القادمة...</div>
+      </div>
+
+      <!-- Selected Day Inspector & Full Slot List -->
       <div class="summary-card">
         <div class="date-nav">
           <button onclick="shiftSelectedDate(-1)">◀ اليوم السابق</button>
-          <button onclick="jumpToToday()">اليوم</button>
+          <button onclick="jumpToNextWorkingDay()">أقرب يوم عمل</button>
           <button onclick="shiftSelectedDate(1)">اليوم التالي ▶</button>
         </div>
         <input type="date" id="calendarDateInput" class="input" onchange="onDatePickerChange()" />
@@ -546,15 +656,18 @@
 
   <script>
     // Paste your deployed Google Apps Script Web App (/exec) URL here:
-    const API_URL = "https://script.google.com/macros/s/AKfycbxxO-JYEdc3D6-yaF-uYNct6dIWWhPweplPUYSGnhZoI7msGAddBf0eVblNQCT9T5kc/exec";
+    const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+    const CLINIC_WORKING_DAYS = [1, 2, 3, 4, 6]; // 0=Sun (OFF), 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri (OFF), 6=Sat
 
     let activeTab = "today";
     let todayData = null;
     let calendarData = null;
+    let sevenDaysCache = [];
     let selectedDate = getCairoTodayYmd();
 
     let bookingDraft = {
       date: "",
+      dayLabel: "",
       slotNumber: 1,
       timeAr: "",
       visitCategory: "NEW"
@@ -572,6 +685,23 @@
       const m = parts.find(p => p.type === "month").value;
       const d = parts.find(p => p.type === "day").value;
       return `${y}-${m}-${d}`;
+    }
+
+    function isHolidayYmd(dateYmd) {
+      const [y, m, d] = String(dateYmd || "").split("-").map(Number);
+      if (!y || !m || !d) return false;
+      const dt = new Date(y, m - 1, d);
+      return !CLINIC_WORKING_DAYS.includes(dt.getDay());
+    }
+
+    function computeSlotTimeAr(slotNumber) {
+      const minsFromStart = (slotNumber - 1) * 15;
+      const totalMins = 12 * 60 + 30 + minsFromStart;
+      const h24 = Math.floor(totalMins / 60) % 24;
+      const min = String(totalMins % 60).padStart(2, "0");
+      const period = h24 >= 12 ? "مساءً" : "صباحاً";
+      const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+      return `${h12}:${min} ${period}`;
     }
 
     function formatDisplayPhone(raw) {
@@ -594,8 +724,15 @@
         .replace(/"/g, "&quot;");
     }
 
+    function apiUrlOrCheck() {
+      if (!API_URL || API_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL") {
+        throw new Error("يرجى وضع رابط Google Apps Script في متغير API_URL داخل index.html");
+      }
+      return API_URL;
+    }
+
     async function apiGet(dateYmd) {
-      const url = `${API_URL}?action=staffData&date=${encodeURIComponent(dateYmd)}`;
+      const url = `${apiUrlOrCheck()}?action=staffData&date=${encodeURIComponent(dateYmd)}`;
       const res = await fetch(url);
       return await res.json();
     }
@@ -607,13 +744,6 @@
         body: JSON.stringify({ source: "STAFF_APP", ...payload })
       });
       return await res.json();
-    }
-
-    function apiUrlOrCheck() {
-      if (!API_URL || API_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL") {
-        throw new Error("يرجى وضع رابط Google Apps Script في متغير API_URL داخل index.html");
-      }
-      return API_URL;
     }
 
     window.addEventListener("DOMContentLoaded", () => {
@@ -634,13 +764,19 @@
       if (tab === "today") {
         loadTodayData();
       } else {
-        loadCalendarData(selectedDate);
+        loadNextSevenWorkingDays();
+        const initialDate = isHolidayYmd(selectedDate) ? findNextWorkingDayFrom(selectedDate) : selectedDate;
+        loadCalendarData(initialDate);
       }
     }
 
     function refreshCurrentTab() {
-      if (activeTab === "today") loadTodayData();
-      else loadCalendarData(selectedDate);
+      if (activeTab === "today") {
+        loadTodayData();
+      } else {
+        loadNextSevenWorkingDays();
+        loadCalendarData(selectedDate);
+      }
     }
 
     function setLoading(isLoading) {
@@ -662,7 +798,6 @@
       setLoading(true);
       showAppError("");
       try {
-        apiUrlOrCheck();
         const today = getCairoTodayYmd();
         const data = await apiGet(today);
         if (!data.ok) throw new Error(data.error || "فشل تحميل بيانات اليوم");
@@ -677,7 +812,9 @@
 
     function renderTodayTab() {
       if (!todayData) return;
+      const isHol = isHolidayYmd(todayData.date);
       document.getElementById("todayTitle").textContent = `${todayData.dayNameAr} (${todayData.date})`;
+      document.getElementById("todayTitle").classList.toggle("holiday-strike", isHol);
 
       const bookedSlots = todayData.slots.filter(s => s.isBooked && s.booking);
       const withDocSlot = bookedSlots.find(s => s.booking.withDoctor);
@@ -694,21 +831,21 @@
       const container = document.getElementById("todayList");
 
       if (listSlots.length === 0) {
-        container.innerHTML = `<div class="empty-state">لا توجد حجوزات مسجلة في تقويم العيادة اليوم.</div>`;
+        container.innerHTML = `<div class="empty-state">${isHol ? "اليوم عطلة أسبوعية ولا توجد حجوزات مسجلة." : "لا توجد حجوزات مسجلة في تقويم العيادة اليوم."}</div>`;
         return;
       }
 
       container.innerHTML = listSlots.map(slot => {
         if (!slot.isBooked) {
           return `
-            <div class="slot-card open-slot">
+            <div class="slot-card open-slot ${isHol ? "holiday-locked" : ""}">
               <div class="slot-header" style="margin-bottom:0;">
                 <div class="slot-badge-group">
                   <span class="slot-num">#${slot.slotNumber}</span>
                   <span class="slot-time">${escapeHtml(slot.timeAr)}</span>
                   <span class="tag tag-type">${escapeHtml(slot.matrixLabelAr)}</span>
                 </div>
-                <span style="font-size:12px;color:var(--muted);font-weight:700;">متاح</span>
+                <span style="font-size:12px;color:var(--muted);font-weight:700;">${isHol ? "عطلة" : "متاح"}</span>
               </div>
             </div>
           `;
@@ -785,14 +922,136 @@
       }
     }
 
-    // ================= TAB 2: FULL CALENDAR RESERVATIONS =================
+    // ================= TAB 2: 7-DAY WORKING OVERVIEW + CALENDAR =================
+    function findNextWorkingDayFrom(startYmd) {
+      const [y, m, d] = startYmd.split("-").map(Number);
+      for (let offset = 0; offset < 21; offset++) {
+        const dt = new Date(y, m - 1, d + offset);
+        if (CLINIC_WORKING_DAYS.includes(dt.getDay())) {
+          return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+        }
+      }
+      return startYmd;
+    }
+
+    function jumpToNextWorkingDay() {
+      const nextWork = findNextWorkingDayFrom(getCairoTodayYmd());
+      loadCalendarData(nextWork);
+    }
+
+    async function loadNextSevenWorkingDays() {
+      const wrap = document.getElementById("sevenDaysOverview");
+      try {
+        apiUrlOrCheck();
+        const [y, m, d] = getCairoTodayYmd().split("-").map(Number);
+        const candidateDates = [];
+
+        for (let offset = 0; candidateDates.length < 7 && offset < 25; offset++) {
+          const dt = new Date(y, m - 1, d + offset);
+          if (CLINIC_WORKING_DAYS.includes(dt.getDay())) {
+            candidateDates.push(`${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`);
+          }
+        }
+
+        const results = await Promise.all(candidateDates.map(ymd => apiGet(ymd)));
+        sevenDaysCache = results.filter(r => r && r.ok);
+        renderSevenDaysOverview();
+      } catch (err) {
+        wrap.innerHTML = `<div class="notice-box">تعذر تحميل الأيام الـ 7 القادمة: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function renderSevenDaysOverview() {
+      const wrap = document.getElementById("sevenDaysOverview");
+      if (!sevenDaysCache || sevenDaysCache.length === 0) {
+        wrap.innerHTML = `<div class="empty-state">لا توجد أيام عمل متاحة حالياً.</div>`;
+        return;
+      }
+
+      wrap.innerHTML = sevenDaysCache.map((dayObj, dayIdx) => {
+        const isSelected = dayObj.date === selectedDate;
+        const newSlot = dayObj.nextRecommendedNewSlot
+          ? dayObj.slots.find(s => s.slotNumber === dayObj.nextRecommendedNewSlot)
+          : null;
+        const fuSlot = dayObj.nextRecommendedFollowUpSlot
+          ? dayObj.slots.find(s => s.slotNumber === dayObj.nextRecommendedFollowUpSlot)
+          : null;
+
+        const openSlots = dayObj.slots.filter(s => !s.isBooked);
+        const nextExtraNum = dayObj.nextExtraSlotNumber || 25;
+
+        const dropdownOptions = [
+          `<option value="">اختر موعداً آخر أو بعد #24...</option>`,
+          ...openSlots.map(s =>
+            `<option value="SLOT:${s.slotNumber}:${escapeHtml(s.timeAr)}:${s.matrixCategory === "FOLLOW_UP" ? "FOLLOW_UP" : "NEW"}">#${s.slotNumber} (${escapeHtml(s.timeAr)}) — ${escapeHtml(s.matrixLabelAr)}</option>`
+          ),
+          `<option value="EXTRA:${nextExtraNum}:${escapeHtml(computeSlotTimeAr(nextExtraNum))}:NEW">+ إضافة حالة إضافية بعد #24 (#${nextExtraNum} — ${escapeHtml(computeSlotTimeAr(nextExtraNum))})</option>`
+        ].join("");
+
+        return `
+          <div class="working-day-card ${isSelected ? "selected-day" : ""}">
+            <div class="wd-header" onclick="loadCalendarData('${dayObj.date}')">
+              <div class="wd-name">${escapeHtml(dayObj.dayNameAr)} (${dayObj.date})</div>
+              <span class="tag ${isSelected ? "tag-doctor" : "tag-rec"}">${isSelected ? "معروض بالأسفل" : "عرض المواعيد"}</span>
+            </div>
+
+            <div class="wd-next-pills">
+              <span class="wd-chip new-chip">
+                كشف جديد: ${newSlot ? `#${newSlot.slotNumber} (${escapeHtml(newSlot.timeAr)})` : "غير متاح / مكتمل"}
+              </span>
+              <span class="wd-chip fu-chip">
+                متابعة: ${fuSlot ? `#${fuSlot.slotNumber} (${escapeHtml(fuSlot.timeAr)})` : "مكتمل"}
+              </span>
+            </div>
+
+            <div class="wd-actions">
+              <button
+                type="button"
+                class="mini-btn call"
+                ${!newSlot ? "disabled" : ""}
+                onclick="openBookingModalForDay('${dayObj.date}', '${escapeHtml(dayObj.dayNameAr)}', ${newSlot ? newSlot.slotNumber : 1}, '${newSlot ? escapeHtml(newSlot.timeAr) : ""}', 'NEW')">
+                + كشف جديد ${newSlot ? `#${newSlot.slotNumber}` : ""}
+              </button>
+              <button
+                type="button"
+                class="mini-btn wa"
+                ${!fuSlot ? "disabled" : ""}
+                onclick="openBookingModalForDay('${dayObj.date}', '${escapeHtml(dayObj.dayNameAr)}', ${fuSlot ? fuSlot.slotNumber : 1}, '${fuSlot ? escapeHtml(fuSlot.timeAr) : ""}', 'FOLLOW_UP')">
+                + متابعة ${fuSlot ? `#${fuSlot.slotNumber}` : ""}
+              </button>
+            </div>
+
+            <div class="wd-dropdown-wrap">
+              <select class="select-mini" onchange="handleDayDropdownSelect(this, ${dayIdx})">
+                ${dropdownOptions}
+              </select>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function handleDayDropdownSelect(selectEl, dayIdx) {
+      const val = selectEl.value;
+      selectEl.selectedIndex = 0;
+      if (!val) return;
+      const dayObj = sevenDaysCache[dayIdx];
+      if (!dayObj) return;
+
+      const [, slotNumStr, timeAr, cat] = val.split(":");
+      const slotNum = parseInt(slotNumStr, 10);
+      openBookingModalForDay(dayObj.date, dayObj.dayNameAr, slotNum, timeAr, cat || "NEW");
+    }
+
     async function loadCalendarData(dateYmd) {
       selectedDate = dateYmd;
       document.getElementById("calendarDateInput").value = selectedDate;
+      if (sevenDaysCache.length > 0) {
+        renderSevenDaysOverview();
+      }
       setLoading(true);
       showAppError("");
       try {
-        apiUrlOrCheck();
         const data = await apiGet(dateYmd);
         if (!data.ok) throw new Error(data.error || "فشل تحميل جدول اليوم");
         calendarData = data;
@@ -816,42 +1075,46 @@
       loadCalendarData(nextYmd);
     }
 
-    function jumpToToday() {
-      loadCalendarData(getCairoTodayYmd());
-    }
-
     function renderCalendarTab() {
       if (!calendarData) return;
+      const isHoliday = Boolean(calendarData.isHoliday) || isHolidayYmd(calendarData.date);
 
-      let metaHtml = `<div class="day-title">${escapeHtml(calendarData.dayNameAr)} (${calendarData.date})</div>`;
-      metaHtml += `<div class="stats-row">`;
-      if (calendarData.nextRecommendedNewSlot) {
-        metaHtml += `<span class="stat-pill">المقترح للكشف الجديد: #${calendarData.nextRecommendedNewSlot}</span>`;
-      }
-      if (calendarData.nextRecommendedFollowUpSlot) {
-        metaHtml += `<span class="stat-pill">المقترح للمتابعة: #${calendarData.nextRecommendedFollowUpSlot}</span>`;
-      }
-      metaHtml += `</div>`;
+      let metaHtml = `<div class="day-title ${isHoliday ? "holiday-strike" : ""}">${escapeHtml(calendarData.dayNameAr)} (${calendarData.date})</div>`;
 
-      if (calendarData.isHoliday) {
-        metaHtml += `<div class="notice-box">يوم عطلة أسبوعية — الحجز متاح لفريق العيادة فقط.</div>`;
-      } else if (calendarData.isTuesday) {
-        metaHtml += `<div class="notice-box">الثلاثاء: عيادة المتابعة وما بعد الجراحة (يمكن للفريق حجز أي حالة يدوياً).</div>`;
+      if (isHoliday) {
+        metaHtml += `<div class="holiday-banner">${escapeHtml(calendarData.dayNameAr)} (${calendarData.date}) — عطلة أسبوعية (الجمعة / الأحد)</div>`;
+        metaHtml += `<div class="holiday-subnote">هذا اليوم إجازة رسمية للعيادة ولا يُسمح بالحجز فيه. اختر أحد أيام العمل الـ 7 بالأعلى.</div>`;
+      } else {
+        metaHtml += `<div class="stats-row">`;
+        if (calendarData.nextRecommendedNewSlot) {
+          metaHtml += `<span class="stat-pill">المقترح للكشف الجديد: #${calendarData.nextRecommendedNewSlot}</span>`;
+        }
+        if (calendarData.nextRecommendedFollowUpSlot) {
+          metaHtml += `<span class="stat-pill">المقترح للمتابعة: #${calendarData.nextRecommendedFollowUpSlot}</span>`;
+        }
+        metaHtml += `</div>`;
+        if (calendarData.isTuesday) {
+          metaHtml += `<div class="notice-box">الثلاثاء: عيادة المتابعة وما بعد الجراحة (يمكن للفريق حجز أي حالة يدوياً).</div>`;
+        }
       }
       document.getElementById("calendarDayMeta").innerHTML = metaHtml;
 
-      document.getElementById("addExtraSlotBtn").textContent =
-        `+ إضافة حالة إضافية بعد #24 (موعد #${calendarData.nextExtraSlotNumber})`;
+      const extraBtn = document.getElementById("addExtraSlotBtn");
+      extraBtn.disabled = isHoliday;
+      extraBtn.textContent = isHoliday
+        ? "عطلة أسبوعية — الحجز مغلق (الجمعة / الأحد)"
+        : `+ إضافة حالة إضافية بعد #24 (موعد #${calendarData.nextExtraSlotNumber})`;
 
       const list = document.getElementById("calendarSlotsList");
       list.innerHTML = calendarData.slots.map(slot => {
         const isRec =
-          slot.slotNumber === calendarData.nextRecommendedNewSlot ||
-          slot.slotNumber === calendarData.nextRecommendedFollowUpSlot;
+          !isHoliday &&
+          (slot.slotNumber === calendarData.nextRecommendedNewSlot ||
+           slot.slotNumber === calendarData.nextRecommendedFollowUpSlot);
 
         if (!slot.isBooked) {
           return `
-            <div class="slot-card open-slot">
+            <div class="slot-card open-slot ${isHoliday ? "holiday-locked" : ""}">
               <div class="slot-header" style="margin-bottom:0;">
                 <div class="slot-badge-group">
                   <span class="slot-num">#${slot.slotNumber}</span>
@@ -859,8 +1122,12 @@
                   <span class="tag tag-type">${escapeHtml(slot.matrixLabelAr)}</span>
                   ${isRec ? `<span class="tag tag-rec">المقترح التالي</span>` : ""}
                 </div>
-                <button type="button" class="mini-btn call" onclick="openBookingModal(${slot.slotNumber}, '${escapeHtml(slot.timeAr)}', '${slot.matrixCategory === "FOLLOW_UP" ? "FOLLOW_UP" : "NEW"}')">
-                  + احجز
+                <button
+                  type="button"
+                  class="mini-btn call"
+                  ${isHoliday ? "disabled" : ""}
+                  onclick="openBookingModal(${slot.slotNumber}, '${escapeHtml(slot.timeAr)}', '${slot.matrixCategory === "FOLLOW_UP" ? "FOLLOW_UP" : "NEW"}')">
+                  ${isHoliday ? "عطلة" : "+ احجز"}
                 </button>
               </div>
             </div>
@@ -872,7 +1139,7 @@
         const waPhone = toWaPhone(b.phone);
 
         return `
-          <div class="slot-card">
+          <div class="slot-card ${isHoliday ? "holiday-locked" : ""}">
             <div class="slot-header">
               <div class="slot-badge-group">
                 <span class="slot-num">#${slot.slotNumber}</span>
@@ -911,15 +1178,20 @@
       }).join("");
     }
 
-    function openBookingModal(slotNumber, timeAr, defaultCategory) {
+    function openBookingModalForDay(dateYmd, dayLabel, slotNumber, timeAr, defaultCategory) {
+      if (isHolidayYmd(dateYmd)) {
+        showAppError("لا يمكن الحجز في أيام العطلة الأسبوعية (الجمعة والأحد).");
+        return;
+      }
       bookingDraft = {
-        date: calendarData.date,
+        date: dateYmd,
+        dayLabel: dayLabel,
         slotNumber: slotNumber,
-        timeAr: timeAr,
+        timeAr: timeAr || computeSlotTimeAr(slotNumber),
         visitCategory: defaultCategory || "NEW"
       };
       document.getElementById("modalSlotTitle").textContent = `حجز موعد #${slotNumber}`;
-      document.getElementById("modalSlotSub").textContent = `${calendarData.dayNameAr} (${calendarData.date}) — الساعة ${timeAr}`;
+      document.getElementById("modalSlotSub").textContent = `${dayLabel} (${dateYmd}) — الساعة ${bookingDraft.timeAr}`;
       document.getElementById("bookNameInput").value = "";
       document.getElementById("bookPhoneInput").value = "";
       document.getElementById("bookPriorityInput").checked = false;
@@ -929,16 +1201,15 @@
       document.getElementById("bookingModal").classList.remove("hidden");
     }
 
-    function openExtraBookingModal() {
+    function openBookingModal(slotNumber, timeAr, defaultCategory) {
       if (!calendarData) return;
+      openBookingModalForDay(calendarData.date, calendarData.dayNameAr, slotNumber, timeAr, defaultCategory);
+    }
+
+    function openExtraBookingModal() {
+      if (!calendarData || isHolidayYmd(calendarData.date)) return;
       const nextNum = calendarData.nextExtraSlotNumber || 25;
-      const minsFromStart = (nextNum - 1) * 15;
-      const totalMins = 12 * 60 + 30 + minsFromStart;
-      const h24 = Math.floor(totalMins / 60) % 24;
-      const min = String(totalMins % 60).padStart(2, "0");
-      const period = h24 >= 12 ? "مساءً" : "صباحاً";
-      const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
-      openBookingModal(nextNum, `${h12}:${min} ${period}`, "NEW");
+      openBookingModalForDay(calendarData.date, calendarData.dayNameAr, nextNum, computeSlotTimeAr(nextNum), "NEW");
     }
 
     function closeBookingModal() {
@@ -963,6 +1234,12 @@
       const priority = document.getElementById("bookPriorityInput").checked;
       const errBox = document.getElementById("modalError");
       const btn = document.getElementById("confirmBookBtn");
+
+      if (isHolidayYmd(bookingDraft.date)) {
+        errBox.textContent = "الجمعة والأحد عطلة أسبوعية ولا يُسمح بالحجز فيهما.";
+        errBox.classList.remove("hidden");
+        return;
+      }
 
       if (!patientName && !phone) {
         errBox.textContent = "يجب إدخال اسم المريض أو رقم الهاتف على الأقل.";
@@ -990,7 +1267,7 @@
         }
 
         closeBookingModal();
-        await loadCalendarData(bookingDraft.date);
+        await Promise.all([loadNextSevenWorkingDays(), loadCalendarData(bookingDraft.date)]);
         openReceiptModal(res.confirmationMessage, res.normalizedPhone);
       } catch (err) {
         errBox.textContent = err.message;
@@ -1036,7 +1313,7 @@
           priority: nextPriority
         });
         if (!res.ok) throw new Error(res.error || "تعذر تعديل الأولوية");
-        await loadCalendarData(selectedDate);
+        await Promise.all([loadNextSevenWorkingDays(), loadCalendarData(selectedDate)]);
       } catch (err) {
         showAppError(err.message);
         setLoading(false);
@@ -1058,7 +1335,7 @@
           rowIndex: rowIndex
         });
         if (!res.ok) throw new Error(res.error || "تعذر إلغاء الحجز");
-        await loadCalendarData(selectedDate);
+        await Promise.all([loadNextSevenWorkingDays(), loadCalendarData(selectedDate)]);
       } catch (err) {
         showAppError(err.message);
         setLoading(false);

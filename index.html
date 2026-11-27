@@ -544,17 +544,12 @@
         </div>
         <div class="stats-row" id="todayStats"></div>
 
-        <div class="range-nav">
-          <button type="button" id="btnBack14" class="range-btn" onclick="shiftTodayRange(-1)">
-            ◀ للخلف (حتى 14 يوماً)
-          </button>
-          <button type="button" id="btnResetToday" class="range-today-btn" onclick="resetTodayRange()">
-            اليوم
-          </button>
-          <button type="button" id="btnFwd7" class="range-btn" onclick="shiftTodayRange(1)">
-            للأمام (حتى 7 أيام) ▶
-          </button>
-        </div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:12px;">
+       <input type="date" id="todayDatePicker" class="input" onchange="onTodayDatePickerChange()" />
+       <button type="button" id="btnResetToday" class="range-today-btn" onclick="resetTodayRange()">
+         اليوم
+       </button>
+     </div>
         <div id="todayRangeHint" class="range-hint"></div>
       </div>
       <div id="todayList"></div>
@@ -756,9 +751,10 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      todayOffsetDays = 0;
-      loadTodayData();
-    });
+   todayOffsetDays = 0;
+   document.getElementById("todayDatePicker").value = getCairoTodayYmd();
+   loadTodayData();
+ });
 
     function switchTab(tab) {
       activeTab = tab;
@@ -799,17 +795,21 @@
     }
 
     // ================= TAB 1: TODAY'S RESERVATIONS (-14 .. +7 DAYS) =================
-    function shiftTodayRange(delta) {
-      const nextOffset = todayOffsetDays + delta;
-      if (nextOffset < MIN_BACK_DAYS || nextOffset > MAX_FWD_DAYS) return;
-      todayOffsetDays = nextOffset;
-      loadTodayData();
-    }
+    function onTodayDatePickerChange() {
+   const picked = document.getElementById("todayDatePicker").value;
+   if (!picked) return;
+   const [ty, tm, td] = getCairoTodayYmd().split("-").map(Number);
+   const [py, pm, pd] = picked.split("-").map(Number);
+   const diffDays = Math.round((new Date(py, pm - 1, pd) - new Date(ty, tm - 1, td)) / 86400000);
+   todayOffsetDays = diffDays;
+   loadTodayData();
+ }
 
-    function resetTodayRange() {
-      todayOffsetDays = 0;
-      loadTodayData();
-    }
+ function resetTodayRange() {
+   todayOffsetDays = 0;
+   document.getElementById("todayDatePicker").value = getCairoTodayYmd();
+   loadTodayData();
+ }
 
     async function loadTodayData() {
       setLoading(true);
@@ -832,20 +832,32 @@
       const isHol = isHolidayYmd(todayData.date);
       const isActualToday = todayOffsetDays === 0;
       const prefixLabel = isActualToday ? "اليوم — " : "";
-      document.getElementById("todayTitle").textContent = `${prefixLabel}${formatArabicDaySingleDate(todayData.date)}`;
-      document.getElementById("todayTitle").classList.toggle("holiday-strike", isHol);
 
-      document.getElementById("btnBack14").disabled = todayOffsetDays <= MIN_BACK_DAYS;
-      document.getElementById("btnFwd7").disabled = todayOffsetDays >= MAX_FWD_DAYS;
-      document.getElementById("btnResetToday").classList.toggle("hidden", isActualToday);
+      const titleEl = document.getElementById("todayTitle");
+      if (titleEl) {
+        titleEl.textContent = `${prefixLabel}${formatArabicDaySingleDate(todayData.date)}`;
+        titleEl.classList.toggle("holiday-strike", isHol);
+      }
 
-      const offsetText =
-        todayOffsetDays === 0
-          ? "معروض: اليوم (النطاق المتاح: 14 يوماً للخلف حتى 7 أيام للأمام)"
-          : todayOffsetDays < 0
-            ? `معروض: قبل اليوم بـ ${Math.abs(todayOffsetDays)} يوم (الحد الأقصى: 14 يوماً للخلف)`
-            : `معروض: بعد اليوم بـ ${todayOffsetDays} يوم (الحد الأقصى: 7 أيام للأمام)`;
-      document.getElementById("todayRangeHint").textContent = offsetText;
+      const pickerEl = document.getElementById("todayDatePicker");
+      if (pickerEl) {
+        pickerEl.value = todayData.date;
+      }
+
+      const resetBtn = document.getElementById("btnResetToday");
+      if (resetBtn) {
+        resetBtn.classList.toggle("hidden", isActualToday);
+      }
+
+      const hintEl = document.getElementById("todayRangeHint");
+      if (hintEl) {
+        hintEl.textContent =
+          todayOffsetDays === 0
+            ? "معروض: اليوم (النطاق المتاح: 14 يوماً للخلف حتى 7 أيام للأمام)"
+            : todayOffsetDays < 0
+              ? `معروض: قبل اليوم بـ ${Math.abs(todayOffsetDays)} يوم (الحد الأقصى: 14 يوماً للخلف)`
+              : `معروض: بعد اليوم بـ ${todayOffsetDays} يوم (الحد الأقصى: 7 أيام للأمام)`;
+      }
 
       const bookedSlots = todayData.slots.filter(s => s.isBooked && s.booking);
       const withDocSlot = bookedSlots.find(s => s.booking.withDoctor);
@@ -886,6 +898,9 @@
         const dispPhone = formatDisplayPhone(b.phone);
         const waPhone = toWaPhone(b.phone);
         const isDoc = Boolean(b.withDoctor);
+        const encodedName = encodeURIComponent(b.patientName || "");
+        const encodedEventId = encodeURIComponent(b.eventId || "");
+        const rowIndexArg = b.rowIndex != null ? Number(b.rowIndex) : "null";
 
         return `
           <div class="slot-card ${isDoc ? "with-doctor" : ""}">
@@ -922,7 +937,7 @@
                 <button
                   type="button"
                   class="mini-btn delete-red"
-                  onclick="deletePatientReservation('${todayData.date}', ${slot.slotNumber}, '${escapeHtml(b.patientName)}', '${escapeHtml(b.eventId || "")}', ${b.rowIndex || "null"})">
+                  onclick="deletePatientReservation('${todayData.date}', ${slot.slotNumber}, decodeURIComponent('${encodedName}'), decodeURIComponent('${encodedEventId}'), ${rowIndexArg})">
                   حذف
                 </button>
               </div>

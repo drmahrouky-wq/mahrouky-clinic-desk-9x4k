@@ -387,6 +387,12 @@
     .mini-btn.wa { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
     .mini-btn.doc-off { background: #fff; border-color: #cbd5e1; color: #334155; }
     .mini-btn.doc-on { background: var(--emerald); border-color: var(--emerald); color: #fff; }
+    .mini-btn.delete-red {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: #fff;
+    }
+    .mini-btn.delete-red:active { opacity: 0.85; }
 
     /* Bottom Navigation */
     .bottom-nav {
@@ -642,8 +648,7 @@
   </div>
 
   <script>
-    // Paste your deployed Google Apps Script Web App (/exec) URL here:
-    const API_URL = "https://script.google.com/macros/s/AKfycbxxO-JYEdc3D6-yaF-uYNct6dIWWhPweplPUYSGnhZoI7msGAddBf0eVblNQCT9T5kc/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxxO-JYEdc3D6-yaF-uYNct6dIWWhPwepl.../exec";
     const CLINIC_WORKING_DAYS = [1, 2, 3, 4, 6]; // 0=Sun (OFF), 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri (OFF), 6=Sat
     const MIN_BACK_DAYS = -14;
     const MAX_FWD_DAYS = 7;
@@ -719,8 +724,8 @@
     }
 
     function apiUrlOrCheck() {
-      if (!API_URL || API_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL") {
-        throw new Error("يرجى وضع رابط Google Apps Script في متغير API_URL داخل index.html");
+      if (!API_URL || API_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL" || API_URL.includes("...")) {
+        throw new Error("يرجى وضع رابط Google Apps Script الكامل في متغير API_URL داخل index.html");
       }
       return API_URL;
     }
@@ -904,11 +909,43 @@
                   onclick="toggleWithDoctor(${slot.slotNumber}, ${!isDoc})">
                   🩺 ${isDoc ? "مع الطبيب ✓" : "مع الطبيب"}
                 </button>
+                <button
+                  type="button"
+                  class="mini-btn delete-red"
+                  onclick="deletePatientReservation('${todayData.date}', ${slot.slotNumber}, '${escapeHtml(b.patientName)}', '${escapeHtml(b.eventId || "")}', ${b.rowIndex || "null"})">
+                  حذف
+                </button>
               </div>
             </div>
           </div>
         `;
       }).join("");
+    }
+
+    async function deletePatientReservation(dateYmd, slotNumber, patientName, eventId, rowIndex) {
+      if (!confirm(`هل أنت متأكد من حذف حجز (${patientName || "مريض"}) في موعد #${slotNumber} بتاريخ ${dateYmd}؟`)) {
+        return;
+      }
+      setLoading(true);
+      showAppError("");
+      try {
+        const res = await apiPost({
+          subAction: "CANCEL_SLOT",
+          date: dateYmd,
+          slotNumber: slotNumber,
+          eventId: eventId || "",
+          rowIndex: rowIndex
+        });
+        if (!res.ok) throw new Error(res.error || "تعذر حذف الحجز");
+        if (activeTab === "today") {
+          await loadTodayData();
+        } else {
+          await loadNextSevenWorkingDays();
+        }
+      } catch (err) {
+        showAppError(err.message);
+        setLoading(false);
+      }
     }
 
     async function toggleWithDoctor(slotNumber, nextState) {
@@ -1000,6 +1037,25 @@
           `<option value="EXTRA:${nextExtraNum}:${escapeHtml(computeSlotTimeAr(nextExtraNum))}:NEW">+ بعد #24 (#${nextExtraNum} · الترتيب ${nextExtraNum} · ${escapeHtml(computeSlotTimeAr(nextExtraNum))})</option>`
         ].join("");
 
+        const bookedSlots = dayObj.slots.filter(s => s.isBooked && s.booking);
+        const bookedRowsHtml = bookedSlots.map(s => {
+          const b = s.booking;
+          return `
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;margin-top:6px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;">
+              <div style="font-size:13px;font-weight:700;">
+                #${s.slotNumber} · ${escapeHtml(b.patientName)} <span style="color:var(--muted);font-size:12px;">(${escapeHtml(s.timeAr)})</span>
+              </div>
+              <button
+                type="button"
+                class="mini-btn delete-red"
+                style="min-height:32px;padding:4px 10px;font-size:12px;"
+                onclick="deletePatientReservation('${dayObj.date}', ${s.slotNumber}, '${escapeHtml(b.patientName)}', '${escapeHtml(b.eventId || "")}', ${b.rowIndex || "null"})">
+                حذف
+              </button>
+            </div>
+          `;
+        }).join("");
+
         return `
           <div class="working-day-card">
             <div class="wd-name">${escapeHtml(dayObj.dayNameAr)} (${dayObj.date})</div>
@@ -1026,6 +1082,8 @@
                 ${dropdownOptions}
               </select>
             </div>
+
+            ${bookedRowsHtml}
           </div>
         `;
       }).join("");

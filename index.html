@@ -227,7 +227,7 @@
       margin-bottom: 10px;
     }
     .wd-name {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 800;
       color: var(--text);
       margin-bottom: 8px;
@@ -560,7 +560,7 @@
       <div id="todayList"></div>
     </section>
 
-    <!-- TAB 2: NEXT 7 WORKING DAYS ONLY -->
+    <!-- TAB 2: NEXT 7 WORKING DAYS ONLY (NEW RESERVATIONS) -->
     <section id="tabCalendar" class="hidden">
       <div class="summary-card">
         <div class="week-overview-title">
@@ -684,6 +684,16 @@
       const [y, m, d] = String(baseYmd).split("-").map(Number);
       const dt = new Date(y, m - 1, d + deltaDays);
       return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+    }
+
+    function formatArabicDaySingleDate(dateYmd) {
+      const [y, m, d] = String(dateYmd || "").split("-").map(Number);
+      if (!y || !m || !d) return String(dateYmd || "");
+      const dt = new Date(y, m - 1, d);
+      const days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+      const dd = String(d).padStart(2, "0");
+      const mm = String(m).padStart(2, "0");
+      return `${days[dt.getDay()]} ${dd}-${mm}-${y}`;
     }
 
     function isHolidayYmd(dateYmd) {
@@ -822,7 +832,7 @@
       const isHol = isHolidayYmd(todayData.date);
       const isActualToday = todayOffsetDays === 0;
       const prefixLabel = isActualToday ? "اليوم — " : "";
-      document.getElementById("todayTitle").textContent = `${prefixLabel}${todayData.dayNameAr} (${todayData.date})`;
+      document.getElementById("todayTitle").textContent = `${prefixLabel}${formatArabicDaySingleDate(todayData.date)}`;
       document.getElementById("todayTitle").classList.toggle("holiday-strike", isHol);
 
       document.getElementById("btnBack14").disabled = todayOffsetDays <= MIN_BACK_DAYS;
@@ -923,7 +933,7 @@
     }
 
     async function deletePatientReservation(dateYmd, slotNumber, patientName, eventId, rowIndex) {
-      if (!confirm(`هل أنت متأكد من حذف حجز (${patientName || "مريض"}) في موعد #${slotNumber} بتاريخ ${dateYmd}؟`)) {
+      if (!confirm(`هل أنت متأكد من حذف حجز (${patientName || "مريض"}) في موعد #${slotNumber} بتاريخ ${formatArabicDaySingleDate(dateYmd)}؟`)) {
         return;
       }
       setLoading(true);
@@ -937,11 +947,7 @@
           rowIndex: rowIndex
         });
         if (!res.ok) throw new Error(res.error || "تعذر حذف الحجز");
-        if (activeTab === "today") {
-          await loadTodayData();
-        } else {
-          await loadNextSevenWorkingDays();
-        }
+        await loadTodayData();
       } catch (err) {
         showAppError(err.message);
         setLoading(false);
@@ -975,7 +981,7 @@
       }
     }
 
-    // ================= TAB 2: NEXT 7 WORKING DAYS ONLY =================
+    // ================= TAB 2: NEXT 7 WORKING DAYS ONLY (NEW RESERVATIONS) =================
     async function loadNextSevenWorkingDays() {
       const wrap = document.getElementById("sevenDaysOverview");
       setLoading(true);
@@ -1011,6 +1017,8 @@
       }
 
       wrap.innerHTML = sevenDaysCache.map((dayObj, dayIdx) => {
+        const singleDateTitle = formatArabicDaySingleDate(dayObj.date);
+
         const newSlot = dayObj.nextRecommendedNewSlot
           ? dayObj.slots.find(s => s.slotNumber === dayObj.nextRecommendedNewSlot)
           : null;
@@ -1037,42 +1045,23 @@
           `<option value="EXTRA:${nextExtraNum}:${escapeHtml(computeSlotTimeAr(nextExtraNum))}:NEW">+ بعد #24 (#${nextExtraNum} · الترتيب ${nextExtraNum} · ${escapeHtml(computeSlotTimeAr(nextExtraNum))})</option>`
         ].join("");
 
-        const bookedSlots = dayObj.slots.filter(s => s.isBooked && s.booking);
-        const bookedRowsHtml = bookedSlots.map(s => {
-          const b = s.booking;
-          return `
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;margin-top:6px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;">
-              <div style="font-size:13px;font-weight:700;">
-                #${s.slotNumber} · ${escapeHtml(b.patientName)} <span style="color:var(--muted);font-size:12px;">(${escapeHtml(s.timeAr)})</span>
-              </div>
-              <button
-                type="button"
-                class="mini-btn delete-red"
-                style="min-height:32px;padding:4px 10px;font-size:12px;"
-                onclick="deletePatientReservation('${dayObj.date}', ${s.slotNumber}, '${escapeHtml(b.patientName)}', '${escapeHtml(b.eventId || "")}', ${b.rowIndex || "null"})">
-                حذف
-              </button>
-            </div>
-          `;
-        }).join("");
-
         return `
           <div class="working-day-card">
-            <div class="wd-name">${escapeHtml(dayObj.dayNameAr)} (${dayObj.date})</div>
+            <div class="wd-name">${escapeHtml(singleDateTitle)}</div>
 
             <div class="wd-actions">
               <button
                 type="button"
                 class="slot-action-btn new-btn"
                 ${!newSlot ? "disabled" : ""}
-                onclick="openBookingModalForDay('${dayObj.date}', '${escapeHtml(dayObj.dayNameAr)}', ${newSlot ? newSlot.slotNumber : 1}, '${newSlot ? escapeHtml(newSlot.timeAr) : ""}', 'NEW')">
+                onclick="openBookingModalForDay('${dayObj.date}', '${escapeHtml(singleDateTitle)}', ${newSlot ? newSlot.slotNumber : 1}, '${newSlot ? escapeHtml(newSlot.timeAr) : ""}', 'NEW')">
                 ${newBtnLabel}
               </button>
               <button
                 type="button"
                 class="slot-action-btn fu-btn"
                 ${!fuSlot ? "disabled" : ""}
-                onclick="openBookingModalForDay('${dayObj.date}', '${escapeHtml(dayObj.dayNameAr)}', ${fuSlot ? fuSlot.slotNumber : 1}, '${fuSlot ? escapeHtml(fuSlot.timeAr) : ""}', 'FOLLOW_UP')">
+                onclick="openBookingModalForDay('${dayObj.date}', '${escapeHtml(singleDateTitle)}', ${fuSlot ? fuSlot.slotNumber : 1}, '${fuSlot ? escapeHtml(fuSlot.timeAr) : ""}', 'FOLLOW_UP')">
                 ${fuBtnLabel}
               </button>
             </div>
@@ -1082,8 +1071,6 @@
                 ${dropdownOptions}
               </select>
             </div>
-
-            ${bookedRowsHtml}
           </div>
         `;
       }).join("");
@@ -1098,7 +1085,7 @@
 
       const [, slotNumStr, timeAr, cat] = val.split(":");
       const slotNum = parseInt(slotNumStr, 10);
-      openBookingModalForDay(dayObj.date, dayObj.dayNameAr, slotNum, timeAr, cat || "NEW");
+      openBookingModalForDay(dayObj.date, formatArabicDaySingleDate(dayObj.date), slotNum, timeAr, cat || "NEW");
     }
 
     function openBookingModalForDay(dateYmd, dayLabel, slotNumber, timeAr, defaultCategory) {
@@ -1114,7 +1101,7 @@
         visitCategory: defaultCategory || "NEW"
       };
       document.getElementById("modalSlotTitle").textContent = `حجز موعد #${slotNumber}`;
-      document.getElementById("modalSlotSub").textContent = `${dayLabel} (${dateYmd}) — الساعة ${bookingDraft.timeAr}`;
+      document.getElementById("modalSlotSub").textContent = `${dayLabel} — الساعة ${bookingDraft.timeAr}`;
       document.getElementById("bookNameInput").value = "";
       document.getElementById("bookPhoneInput").value = "";
       document.getElementById("bookPriorityInput").checked = false;
